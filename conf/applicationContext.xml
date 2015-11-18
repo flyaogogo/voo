@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:jaxws="http://cxf.apache.org/jaxws"
+	xmlns:jee="http://www.springframework.org/schema/jee" xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.5.xsd http://www.springframework.org/schema/jee http://www.springframework.org/schema/jee/spring-jee-2.5.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd http://cxf.apache.org/jaxws 
+    http://cxf.apache.org/schemas/jaxws.xsd">
+	<description>Spring公共配置文件</description>
+
+	<!-- annotation way configuration -->
+	<context:component-scan base-package="com.tmwrk.voosky" />
+
+	<!-- 定义受环境影响易变的变量 -->
+	<bean
+		class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="systemPropertiesModeName" value="SYSTEM_PROPERTIES_MODE_OVERRIDE" />
+		<property name="ignoreResourceNotFound" value="false" />
+		<property name="locations">
+			<list>
+				<value>classpath:Proxool.properties</value>
+				<value>classpath:config.properties</value>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="ds0" class="org.logicalcobwebs.proxool.ProxoolDataSource"
+		destroy-method="close">
+		<property name="driver">
+			<value>${jdbc-1.proxool.driver-class}</value>
+		</property>
+		<property name="driverUrl">
+			<value>${jdbc-1.proxool.driver-url}</value>
+		</property>
+		<property name="user">
+			<value>${jdbc-1.user}</value>
+		</property>
+		<property name="password">
+			<value>${jdbc-1.password}</value>
+		</property>
+		<property name="alias">
+			<value>${jdbc-1.proxool.alias}</value>
+		</property>
+		<property name="prototypeCount">
+			<value>${jdbc-1.proxool.prototype-count}</value>
+		</property>
+		<property name="maximumConnectionCount">
+			<value>${jdbc-1.proxool.maximum-connection-count}</value>
+		</property>
+		<property name="minimumConnectionCount">
+			<value>${jdbc-1.proxool.minimum-connection-count}</value>
+		</property>
+		<property name="maximumActiveTime">
+			<value>${jdbc-1.proxool.maximum-active-time}</value>
+		</property>
+		<property name="simultaneousBuildThrottle">
+			<value>${jdbc-1.proxool.simultaneous-build-throttle}</value>
+		</property>
+		<property name="verbose">
+			<value>${jdbc-1.proxool.verbose}</value>
+		</property>
+		<property name="statistics">
+			<value>${jdbc-1.proxool.statistics}</value>
+		</property>
+		<property name="houseKeepingTestSql">
+			<value>${jdbc-1.proxool.house-keeping-test-sql}</value>
+		</property>
+	</bean>
+
+	<bean id="dataSource" class="com.tmwrk.voosky.module.orm.ibatis.DynamicDataSource">
+		<property name="targetDataSources">
+			<map key-type="java.lang.String">
+				<entry key="1" value-ref="ds0" />
+			</map>
+		</property>
+		<property name="defaultTargetDataSource" ref="ds0" />
+	</bean>
+	<bean id="sqlMapClient" class="org.springframework.orm.ibatis.SqlMapClientFactoryBean">
+		<property name="dataSource" ref="dataSource" />
+		<property name="configLocation">
+			<value>classpath:SqlMapConfig.xml</value>
+		</property>
+	</bean>
+
+	<!-- 事务管理器配置,单数据源事务 -->
+	<bean id="transactionManager"
+		class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="dataSource" />
+	</bean>
+
+	<!-- 使用annotation定义事务 -->
+	<tx:annotation-driven transaction-manager="transactionManager" />
+
+	<!-- SpringContextHolder定义 -->
+	<bean class="com.tmwrk.voosky.module.spring.SpringContextHolder"
+		lazy-init="false" />
+
+	<bean id="sqlExecutor" class="com.tmwrk.voosky.module.orm.ibatis.LimitSqlExecutor">
+		<property name="dialect">
+			<bean class="com.tmwrk.voosky.module.orm.ibatis.dialect.MySQLDialect" />
+		</property>
+	</bean>
+
+	<bean id="threadPool" class="com.tmwrk.voosky.module.pool.ThreadPool">
+		<property name="poolSize" value="${threadpool.size}" />
+	</bean>
+
+	<bean id="springContextHolder" class="com.tmwrk.voosky.module.spring.SpringContextHolder">
+	</bean>
+
+</beans>

@@ -1,0 +1,58 @@
+<web-app id="WebApp_9" version="2.4"
+    xmlns="http://java.sun.com/xml/ns/j2ee"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd">
+
+	<!-- 下面是struts2和spring配置部分 -->
+	<context-param>
+		<param-name>contextConfigLocation</param-name>
+	    <param-value>classpath:applicationContext.xml</param-value>
+    </context-param>
+
+	<filter>  
+		<filter-name>encodingFilter</filter-name>  
+		<filter-class>org.springframework.web.filter.CharacterEncodingFilter</filter-class>  
+		<init-param>  
+			<param-name>encoding</param-name>  
+			<param-value>UTF-8</param-value>  
+		</init-param>  
+	</filter>
+	
+	<!-- <filter>
+		<filter-name>xssFilter</filter-name>
+		<filter-class>com.travelsky.monitor.web.filter.XssFilter</filter-class>
+	</filter>
+	<filter-mapping>
+		<filter-name>xssFilter</filter-name>
+		<url-pattern>*.htm</url-pattern>
+	</filter-mapping> -->
+	
+	<filter>
+        <filter-name>struts2</filter-name>
+        <filter-class>org.apache.struts2.dispatcher.ng.filter.StrutsPrepareAndExecuteFilter</filter-class>
+    </filter>
+ 
+    <filter-mapping>
+        <filter-name>struts2</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+    
+    <!-- <filter>
+		<filter-name>JspsFilter</filter-name>
+		<filter-class>com.travelsky.monitor.web.filter.JspsFilter</filter-class>
+	</filter>
+	<filter-mapping>
+		<filter-name>JspsFilter</filter-name>
+		<url-pattern>*.jsp</url-pattern>
+	</filter-mapping> -->
+    
+    
+	<filter>
+		<filter-name>struts-cleanup</filter-name>
+		<filter-class>org.apache.struts2.dispatcher.ActionContextCleanUp</filter-class>
+	</filter>
+	<!--Spring ApplicationContext 载入 -->  
+	<listener>  
+		<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>  
+	</listener>
+</web-app>
